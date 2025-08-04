@@ -1,9 +1,4 @@
+# ignore virtual environment
 .venv/
-__pycache__/
+# macOS Finder files
 .DS_Store
-*.pkl
-*.zip
-*.log
-.env
-*.db
-.streamlit/secrets.toml
