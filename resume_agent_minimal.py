@@ -142,7 +142,7 @@ qa_chain = initialize_chain()
   #  result = qa_chain({"question": query})
    # st.write(result["answer"])
 
-st.text_input("", key="query")
+query = st.text_input("",key="query")
 
 
 # Show the box (no label) _and_ capture it
