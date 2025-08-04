@@ -8,7 +8,7 @@ import streamlit as st
 import openai
 import streamlit as st
 
-import streamlit as st
+st.write("Key present?", bool(st.secrets.get("OPENAI_API_KEY")))
 
 st.set_page_config(
     page_title="Resume Agent",
@@ -102,6 +102,7 @@ if "memory" not in st.session_state:
 @st.cache_resource
 def initialize_chain():
     docs = load_documents()
+    st.write(f"🔍 Loaded {len(docs)} documents for indexing")
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     split_docs = splitter.split_documents(docs)
 
