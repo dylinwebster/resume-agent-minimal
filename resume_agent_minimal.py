@@ -5,13 +5,10 @@ import os
 # from dotenv import load_dotenv
 from pathlib import Path
 import streamlit as st
-import openai
+# import openai
+import streamlit as st
 
-st.cache_data.clear()
-st.cache_resource.clear()
-
-
-st.write("Key present?", bool(st.secrets.get("OPENAI_API_KEY")))
+import streamlit as st
 
 st.set_page_config(
     page_title="Resume Agent",
@@ -31,16 +28,15 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import DocArrayInMemorySearch
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+# from langchain_community.vectorstores import FAISS # stubbed out for embed UI testing
+# from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.memory import ConversationBufferMemory
 
 # Load environment variables
 # load_dotenv()
 # openai.api_key = st.secrets["OPENAI_API_KEY"]
-
-openai_key = st.secrets["OPENAI_API_KEY"]
+# openai_key = st.secrets["OPENAI_API_KEY"]
 
 
 # 📎 Manual case study URL map
@@ -103,90 +99,29 @@ if "memory" not in st.session_state:
     )
 
 #Initialize Chain
+#Initialize Chain
 @st.cache_resource
 def initialize_chain():
-    docs = load_documents()
-    st.write(f"🔍 Loaded {len(docs)} documents for indexing")
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
-    split_docs = splitter.split_documents(docs)
+    # --- FAISS & RetrievalQA chain is stubbed out for embed UI testing ---
+    def dummy_qa_chain(inputs: dict):
+        question = inputs.get("question", "")
+        return {
+            "answer": f"(UI test) You asked: {question}",
+            "source_documents": []
+        }
 
-    embedding = OpenAIEmbeddings(openai_api_key=openai_key)
-    
-    #swapped in FAISS
-    
-    from langchain_community.vectorstores import DocArrayInMemorySearch
-    vectordb = DocArrayInMemorySearch.from_documents(split_docs, embedding)
-
-
-    retriever = vectordb.as_retriever(search_kwargs={"k": 10})
-    llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
-
-    custom_prompt = PromptTemplate.from_template(
-        """
-        You are acting as Dylin's executive assistant. Answer all questions as if you are Dylin speaking in the first person.
-
-        Use the provided context to answer. If relevant, synthesize across multiple experiences.
-
-        Include a reference link to the original case study when available, using the `source_url` metadata field.
-
-        Speak strategically, not just descriptively. If you can't find the answer, say "Based on my available experience, I would approach it this way..." and give your best reasoning.
-
-        Question: {question}
-        Context: {context}
-        Answer:
-        """
-    )
-
-    qa_chain = RetrievalQAWithSourcesChain.from_chain_type(
-        llm=llm,
-        retriever=retriever,
-        chain_type="stuff",
-        chain_type_kwargs={"prompt": custom_prompt, "document_variable_name": "context"},
-        memory=st.session_state.memory,
-        return_source_documents=True,
-    )
-    return qa_chain
-
-
-
+    return dummy_qa_chain
 
 # 🖥️ Streamlit UI
 st.set_page_config(page_title="Resume Agent (UI Test)", layout="wide")
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# 2) Constrain & center the input boxst.markdown(
-st.markdown(
-    """
-    <style>
-      /* make the Ask-a-question input max 400px wide and center it */
-      .stTextInput > div > div > input {
-        max-width: 400px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-#initialize dummy chain
 qa_chain = initialize_chain()
 
 
-# render Input box and echo logic - removing to test, replace with webflow
-# query = st.text_input("Ask a question:")
-# removing below for test
-# if query:
-  #  result = qa_chain({"question": query})
-   # st.write(result["answer"])
+# Input box
+query = st.text_input("Ask a question:")
 
-query = st.text_input("",key="query")
-
-
-# Show the box (no label) _and_ capture it
-
-
-# When they hit Enter, echo via our dummy chain
+# Echo back via stubbed chain
 if query:
-     result = qa_chain({"question": query})
-     st.write(result["answer"])
+    result = qa_chain({"question": query})
+    st.write(result["answer"])
