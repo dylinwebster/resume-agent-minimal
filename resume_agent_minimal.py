@@ -28,8 +28,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-# from langchain_community.vectorstores import FAISS 
-# from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS 
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.memory import ConversationBufferMemory
 
@@ -105,39 +105,39 @@ def initialize_chain():
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     split_docs = splitter.split_documents(docs)
 
-    # embedding = OpenAIEmbeddings(openai_api_key=openai_key)
-    # vectordb = FAISS.from_documents(split_docs, embedding)
+    embedding = OpenAIEmbeddings(openai_api_key=openai_key)
+    vectordb = FAISS.from_documents(split_docs, embedding)
 
-    retriever = vectordb.as_retriever(search_kwargs={'k':10})
+    retriever = vectordb.as_retriever(search_kwargs={"k": 10})
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
 
-    custom_prompt = PromptTemplate.from_template("""
-    You are acting as Dylin's executive assistant. Answer all questions as if you are Dylin speaking in the first person.
+    custom_prompt = PromptTemplate.from_template(
+        """
+        You are acting as Dylin's executive assistant. Answer all questions as if you are Dylin speaking in the first person.
 
-    Use the provided context to answer. If relevant, synthesize across multiple experiences.
+        Use the provided context to answer. If relevant, synthesize across multiple experiences.
 
-    Include a reference link to the original case study when available, using the `source_url` metadata field.
+        Include a reference link to the original case study when available, using the `source_url` metadata field.
 
-    Speak strategically, not just descriptively. If you can't find the answer, say "Based on my available experience, I would approach it this way..." and give your best reasoning.
+        Speak strategically, not just descriptively. If you can't find the answer, say "Based on my available experience, I would approach it this way..." and give your best reasoning.
 
-    Question: {question}
-    Context: {context}
-    Answer:
-    """)
+        Question: {question}
+        Context: {context}
+        Answer:
+        """
+    )
 
     qa_chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
         retriever=retriever,
         chain_type="stuff",
-        chain_type_kwargs={
-            "prompt": custom_prompt,
-            "document_variable_name": "context",
-        },
+        chain_type_kwargs={"prompt": custom_prompt, "document_variable_name": "context"},
         memory=st.session_state.memory,
         return_source_documents=True,
     )
-
     return qa_chain
+
+
 
 
 # 🖥️ Streamlit UI
