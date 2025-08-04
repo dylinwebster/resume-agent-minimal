@@ -28,8 +28,8 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS 
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+# from langchain_community.vectorstores import FAISS 
+# from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.memory import ConversationBufferMemory
 
@@ -105,8 +105,8 @@ def initialize_chain():
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     split_docs = splitter.split_documents(docs)
 
-    embedding = OpenAIEmbeddings(openai_api_key=openai_key)
-    vectordb = FAISS.from_documents(split_docs, embedding)
+    # embedding = OpenAIEmbeddings(openai_api_key=openai_key)
+    # vectordb = FAISS.from_documents(split_docs, embedding)
 
     retriever = vectordb.as_retriever(search_kwargs={'k':10})
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
