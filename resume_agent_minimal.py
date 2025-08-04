@@ -135,8 +135,8 @@ st.markdown(
 qa_chain = initialize_chain()
 
 
-# render Input box and echo logic
-query = st.text_input("Ask a question:")
+# render Input box and echo logic - removing to test, replace with webflow
+# query = st.text_input("Ask a question:")
 
 if query:
     result = qa_chain({"question": query})
