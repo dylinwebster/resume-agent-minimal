@@ -114,14 +114,30 @@ def initialize_chain():
 
 # 🖥️ Streamlit UI
 st.set_page_config(page_title="Resume Agent (UI Test)", layout="wide")
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+# 2) Constrain & center the input boxst.markdown(
+st.markdown(
+    """
+    <style>
+      /* make the Ask-a-question input max 400px wide and center it */
+      .stTextInput > div > div > input {
+        max-width: 400px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+#initialize dummy chain
 qa_chain = initialize_chain()
 
 
-# Input box
+# render Input box and echo logic
 query = st.text_input("Ask a question:")
 
-# Echo back via stubbed chain
 if query:
     result = qa_chain({"question": query})
     st.write(result["answer"])
