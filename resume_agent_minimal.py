@@ -137,7 +137,9 @@ qa_chain = initialize_chain()
 
 # render Input box and echo logic - removing to test, replace with webflow
 # query = st.text_input("Ask a question:")
+# removing below for test
+# if query:
+  #  result = qa_chain({"question": query})
+   # st.write(result["answer"])
 
-if query:
-    result = qa_chain({"question": query})
-    st.write(result["answer"])
+st.text_input("", key="query")
