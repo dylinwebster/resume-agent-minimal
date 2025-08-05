@@ -117,9 +117,6 @@ def initialize_chain():
     from langchain_community.vectorstores import FAISS
     vectordb = FAISS.from_documents(split_docs, embedding)
 
-    )
-
-
     retriever = vectordb.as_retriever(search_kwargs={"k": 10})
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
 
