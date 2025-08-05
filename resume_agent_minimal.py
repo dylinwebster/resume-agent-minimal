@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 import streamlit as st
 import openai
-import streamlit as st
 
 st.write("Key present?", bool(st.secrets.get("OPENAI_API_KEY")))
 
@@ -36,6 +35,7 @@ from langchain.memory import ConversationBufferMemory
 # Load environment variables
 # load_dotenv()
 # openai.api_key = st.secrets["OPENAI_API_KEY"]
+
 openai_key = st.secrets["OPENAI_API_KEY"]
 
 
