@@ -111,7 +111,13 @@ def initialize_chain():
     split_docs = splitter.split_documents(docs)
 
     embedding = OpenAIEmbeddings(openai_api_key=openai_key)
-    vectordb = Chroma.from_documents(split_docs, embedding)
+    vectordb = Chroma.from_documents(
+        documents=split_docs,
+        embedding=embedding,
+        collection_name="resume-agent",
+        persist_directory=None  # disables disk-based persistence
+    )
+
 
     retriever = vectordb.as_retriever(search_kwargs={"k": 10})
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
