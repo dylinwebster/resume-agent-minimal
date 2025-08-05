@@ -7,6 +7,10 @@ from pathlib import Path
 import streamlit as st
 import openai
 
+st.cache_data.clear()
+st.cache_resource.clear()
+
+
 st.write("Key present?", bool(st.secrets.get("OPENAI_API_KEY")))
 
 st.set_page_config(
