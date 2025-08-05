@@ -31,7 +31,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 from langchain.prompts import PromptTemplate
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import Chroma 
+from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.memory import ConversationBufferMemory
@@ -111,11 +111,12 @@ def initialize_chain():
     split_docs = splitter.split_documents(docs)
 
     embedding = OpenAIEmbeddings(openai_api_key=openai_key)
-    vectordb = Chroma.from_documents(
-        documents=split_docs,
-        embedding=embedding,
-        collection_name="resume-agent",
-        persist_directory=None  # disables disk-based persistence
+    
+    #swapped in FAISS
+    
+    from langchain_community.vectorstores import FAISS
+    vectordb = FAISS.from_documents(split_docs, embedding)
+
     )
 
 
