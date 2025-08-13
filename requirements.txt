@@ -1,11 +1,8 @@
-streamlit
+streamlit>=1.36
+langchain==0.2.12
+langchain-community==0.2.11
+langchain-openai>=0.1.20
+tiktoken
 python-dotenv
-openai
-langchain
-langchain-community
-langchain-openai
-chromadb
-pypdf
-python-docx
-Pillow
-docarray
+faiss-cpu==1.8.0.post1
+numpy<2.0  # belt-and-suspenders compat with some wheels
