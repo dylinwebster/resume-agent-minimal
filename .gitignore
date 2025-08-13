@@ -2,3 +2,5 @@
 .venv/
 # macOS Finder files
 .DS_Store
+.streamlit/secrets.toml
+.env

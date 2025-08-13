@@ -1,12 +1,21 @@
-# resume_agent_app.py
-
-import re
 import os
-from dotenv import load_dotenv
+import re
 from pathlib import Path
+from dotenv import load_dotenv
 import streamlit as st
-import openai
-import streamlit as st
+
+# Load .env but don’t overwrite existing env vars
+load_dotenv(override=False)
+
+# Prefer env var, fallback to Streamlit secrets
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    st.stop()
+
+# Normalize for all downstream libs
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+
 
 st.write("Key present?", bool(st.secrets.get("OPENAI_API_KEY")))
 
@@ -33,10 +42,6 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.memory import ConversationBufferMemory
 
-# Load environment variables
-load_dotenv()
-openai.api_key = st.secrets["OPENAI_API_KEY"]
-openai_key = st.secrets["OPENAI_API_KEY"]
 
 
 # 📎 Manual case study URL map
@@ -98,20 +103,30 @@ if "memory" not in st.session_state:
         output_key="answer",
     )
 
-#Initialize Chain
+# 🧠 Initialize Chain
 @st.cache_resource
 def initialize_chain():
     docs = load_documents()
     st.write(f"🔍 Loaded {len(docs)} documents for indexing")
+
+    # Split documents into chunks
     splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200)
     split_docs = splitter.split_documents(docs)
 
-    embedding = OpenAIEmbeddings(openai_api_key=openai_key)
+    # Create embeddings with unified API key
+    from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+    embedding = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
+
+    # Build FAISS vector store
     vectordb = FAISS.from_documents(split_docs, embedding)
 
+    # Create retriever
     retriever = vectordb.as_retriever(search_kwargs={"k": 10})
-    llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4")
 
+    # Initialize LLM
+    llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name="gpt-4o-mini")  # or "gpt-4"
+
+    # Custom prompt
     custom_prompt = PromptTemplate.from_template(
         """
         You are acting as Dylin's executive assistant. Answer all questions as if you are Dylin speaking in the first person.
@@ -128,6 +143,7 @@ def initialize_chain():
         """
     )
 
+    # Build QA chain
     qa_chain = RetrievalQAWithSourcesChain.from_chain_type(
         llm=llm,
         retriever=retriever,
@@ -136,6 +152,7 @@ def initialize_chain():
         memory=st.session_state.memory,
         return_source_documents=True,
     )
+
     return qa_chain
 
 
