@@ -6,3 +6,5 @@ tiktoken
 python-dotenv
 faiss-cpu==1.8.0.post1
 numpy<2.0  # belt-and-suspenders compat with some wheels
+pypdf
+docx2txt
